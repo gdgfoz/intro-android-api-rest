@@ -24,16 +24,23 @@ import br.com.gdgfoz.apirest.R;
  */
 public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ViewHolder> {
 
+    private final PersonClickListener clickListener;
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Person> items;
     private int mItemLayoutResId = R.layout.list_item_person;
 
 
-    public PersonAdapter(Context context, ArrayList<Person> persons) {
+    public PersonAdapter(Context context, ArrayList<Person> persons, PersonClickListener clickListener) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         items = persons;
+        this.clickListener = clickListener;
+    }
+
+    public interface PersonClickListener
+    {
+        public void personCLicked(Person person);
     }
 
     @Override
@@ -43,7 +50,7 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
 
         Person person = items.get(position);
 
@@ -54,6 +61,13 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ViewHolder
 
         if(!person.getFoto().isEmpty())
             Picasso.with(mContext).load(person.getFoto()).placeholder(R.drawable.gdg).into(holder.imgPhotoPerson);
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.personCLicked(items.get(position));
+            }
+        });
 
     }
 
