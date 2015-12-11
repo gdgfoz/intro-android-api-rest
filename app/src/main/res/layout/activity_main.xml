@@ -16,11 +16,11 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_person"
+            android:id="@+id/list_data"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            tools:listitem="@layout/list_item_person"
+            tools:listitem="@layout/list_item_category"
             android:visibility="gone"
             />
         <ProgressBar
@@ -30,7 +30,6 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:visibility="visible"
-
             />
     </RelativeLayout>
 

@@ -6,29 +6,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import br.com.gdgfoz.apirest.Constants;
 import br.com.gdgfoz.apirest.R;
-import br.com.gdgfoz.apirest.adapters.PersonAdapter;
+import br.com.gdgfoz.apirest.adapters.CategoryAdapter;
 import br.com.gdgfoz.apirest.api.RestClient;
-import br.com.gdgfoz.apirest.models.Person;
+import br.com.gdgfoz.apirest.models.CategoriesResponse;
+import br.com.gdgfoz.apirest.models.Category;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-public class MainActivity extends AppCompatActivity implements PersonAdapter.PersonClickListener{
+public class MainActivity extends AppCompatActivity implements CategoryAdapter.CategoryClickListener{
 
     private LinearLayoutManager mLayoutManager;
-    private RecyclerView listPerson;
-    private PersonAdapter personAdapter;
+    private RecyclerView listCategory;
+    private CategoryAdapter categoryAdapter;
     private ProgressBar mProgressBar;
     private Toolbar toolbar;
 
@@ -44,35 +45,51 @@ public class MainActivity extends AppCompatActivity implements PersonAdapter.Per
 
         setSupportActionBar(toolbar);
 
-        listPerson = (RecyclerView) findViewById(R.id.list_person);
+        listCategory = (RecyclerView) findViewById(R.id.list_data);
 
-        personAdapter = new PersonAdapter(this, new ArrayList<Person>(), this);
+        categoryAdapter = new CategoryAdapter(this, new ArrayList<Category>());
+        categoryAdapter.setClickListener(this);
 
         setRecyclerView();
 
-        RestClient.get().listPerson(new Callback<List<Person>>() {
+        RestClient.get().listCategories(new Callback<CategoriesResponse>() {
             @Override
-            public void success(List<Person> items, Response response) {
+            public void success(CategoriesResponse categoriesResponse, Response response) {
                 mProgressBar.setVisibility(View.GONE);
-                listPerson.setVisibility(View.VISIBLE);
-                personAdapter.setItems(items);
+                categoryAdapter.setItems(categoriesResponse.getData());
+                listCategory.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 mProgressBar.setVisibility(View.GONE);
-                Log.d("gdg", "fail" + error.getMessage());
+                Toast.makeText(MainActivity.this, "Falha na api", Toast.LENGTH_LONG).show();
             }
         });
+
+//        RestClient.get().listCategory(new Callback<List<Person>>() {
+//            @Override
+//            public void success(List<Person> items, Response response) {
+//                mProgressBar.setVisibility(View.GONE);
+//                listCategory.setVisibility(View.VISIBLE);
+//                categoryAdapter.setItems(items);
+//            }
+//
+//            @Override
+//            public void failure(RetrofitError error) {
+//                mProgressBar.setVisibility(View.GONE);
+//                Log.d("gdg", "fail" + error.getMessage());
+//            }
+//        });
 
     }
 
     private void setRecyclerView() {
 
         mLayoutManager = new LinearLayoutManager(this);
-        listPerson.setLayoutManager(mLayoutManager);
-        listPerson.setHasFixedSize(true);
-        listPerson.setAdapter(personAdapter);
+        listCategory.setLayoutManager(mLayoutManager);
+        listCategory.setHasFixedSize(true);
+        listCategory.setAdapter(categoryAdapter);
 
     }
 
@@ -99,14 +116,32 @@ public class MainActivity extends AppCompatActivity implements PersonAdapter.Per
     }
 
     @Override
-    public void personCLicked(Person person) {
-        Intent mIntent = new Intent(this, PersonDetailActivity.class);
+    public void categoryCLicked(Category category) {
+
+        Intent mIntent = new Intent(this, TasksActivity.class);
 
         Bundle data = new Bundle();
-        data.putSerializable("person", person);
+
+        data.putInt(Constants.CATEGORY_ID, category.getId());
+        data.putString(Constants.CATEGORY_NAME, category.getCategory());
 
         mIntent.putExtras(data);
 
         startActivity(mIntent);
+
     }
+//
+//    @Override
+//    public void personCLicked(Person person) {
+//        Intent mIntent = new Intent(this, TasksActivity.class);
+//
+//        Bundle data = new Bundle();
+//        data.putSerializable("person", person);
+//
+//        mIntent.putExtras(data);
+//
+//        startActivity(mIntent);
+//    }
+
+
 }
